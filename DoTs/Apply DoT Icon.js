@@ -15,4 +15,8 @@ if (args[1] == 'bleed') {
   if (iconTarget.data.effects.includes('systems/pf2e/icons/spells/produce-flame.jpg') == false) {
     iconTarget.toggleEffect('systems/pf2e/icons/spells/produce-flame.jpg');
   }
+} else if (args[1] == 'healing') {
+  if (iconTarget.data.effects.includes('icons/Conditions/Fated.png') == false) {
+    iconTarget.toggleEffect('icons/Conditions/Fated.png');
+  }
 }
