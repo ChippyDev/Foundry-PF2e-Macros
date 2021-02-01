@@ -1,21 +1,52 @@
-if (token.data.effects.includes('systems/pf2e/icons/spells/blood-vendetta.jpg') == true) {
-  token.toggleEffect('systems/pf2e/icons/spells/blood-vendetta.jpg');
-  const alertId = TurnAlert.getAlertByName(`${token.data._id}:bleed`).id;
-  TurnAlert.delete(game.combat._id, alertId);
-} else if (token.data.effects.includes('systems/pf2e/icons/spells/cloudkill.jpg') == true) {
-  token.toggleEffect('systems/pf2e/icons/spells/cloudkill.jpg');
-  const alertId = TurnAlert.getAlertByName(`${token.data._id}:acid`).id;
-  TurnAlert.delete(game.combat._id, alertId);
-} else if (token.data.effects.includes('systems/pf2e/icons/spells/produce-flame.jpg') == true) {
-  token.toggleEffect('systems/pf2e/icons/spells/produce-flame.jpg');
-  const alertId = TurnAlert.getAlertByName(`${token.data._id}:fire`).id;
-  TurnAlert.delete(game.combat._id, alertId);
-} else if (token.data.effects.includes('systems/pf2e/icons/spells/life-boost.jpg') == true) {
-  token.toggleEffect('systems/pf2e/icons/spells/life-boost.jpg');
-  const alertId = TurnAlert.getAlertByName(`${token.data._id}:fast-healing`).id;
-  TurnAlert.delete(game.combat._id, alertId);
-} else if (token.data.effects.includes('systems/pf2e/icons/spells/regeneration.jpg') == true) {
-  token.toggleEffect('systems/pf2e/icons/spells/regeneration.jpg');
-  const alertId = TurnAlert.getAlertByName(`${token.data._id}:regen`).id;
-  TurnAlert.delete(game.combat._id, alertId);
+if (!token) {
+  ui.notifications.warn('You must have an actor selected.');
+  return;
 }
+
+const alertArray = TurnAlert.getAlerts().filter(
+  (c) => c.turnId === game.combat.combatants.find((c) => c.tokenId === token.data._id)._id
+);
+
+if (alertArray.length == 0) {
+  ui.notifications.warn('Actor has no Effects.');
+  return;
+}
+
+let options = '';
+for (let x = 0; x < alertArray.length; x++) {
+  options += `<option value="${alertArray[x].args[2]}">${alertArray[x].label}</option>\n`;
+}
+
+const applyChanges = ($html) => {
+  const type = $html.find('[name="type"]')[0].value || 'null';
+  const alertId = TurnAlert.getAlertByName(`${token.data._id}:${type}`).id;
+
+  game.macros.getName('Toggle Effect Icon').execute(token.data._id, type);
+  TurnAlert.delete(game.combat._id, alertId);
+};
+
+const dialog = new Dialog({
+  title: 'Select Effecta',
+  content: `
+<form>
+<div class="form-group"> 
+<select id="type" name="type">
+${options}
+</select>
+</div>
+</form>
+`,
+  buttons: {
+    yes: {
+      icon: `<i class="fas fa-check"></i>`,
+      label: 'Delete',
+      callback: applyChanges,
+    },
+    no: {
+      icon: `<i class="fas fa-times"></i>`,
+      label: 'Cancel',
+    },
+  },
+  default: 'no',
+});
+dialog.render(true);
