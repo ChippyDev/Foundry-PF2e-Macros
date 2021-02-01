@@ -19,7 +19,7 @@ const applyChanges = ($html) => {
 
   const alertData = {
     name: `${targetid}:${type}`,
-    label: 'GM DoT',
+    label: `GM DoT ${type}`,
     round: 0,
     roundAbsolute: false,
     turnId: targetCombat._id,
@@ -28,11 +28,11 @@ const applyChanges = ($html) => {
       frequency: 1,
     },
     args: [targetid, damage, type],
-    macro: 'DoT Tick',
+    macro: 'Effect Tick',
   };
 
   TurnAlert.create(alertData);
-  game.macros.getName('Apply DoT Icon').execute(targetid, type);
+  game.macros.getName('Toggle Effect Icon').execute(targetid, type);
 };
 
 const dialog = new Dialog({
@@ -40,7 +40,7 @@ const dialog = new Dialog({
   content: `
 <form>
 <div class="form-group">
-<label>Damage:</label>
+<label>Amount:</label>
 <input id="damage" name="damage" type="string"/>
 </div>
 <div class="form-group">
@@ -49,6 +49,8 @@ const dialog = new Dialog({
 <option value="bleed">Bleed</option>
 <option value="acid">Acid</option>
 <option value="fire">Fire</option>
+<option value="fast-healing">Fast healing</option>
+<option value="regen">Regen</option>
 </select>
 </div>
 </form>

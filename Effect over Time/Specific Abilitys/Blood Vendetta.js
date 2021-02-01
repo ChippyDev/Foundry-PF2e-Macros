@@ -7,10 +7,18 @@ const targetid = game.user.targets.values().next().value.data._id;
 const target = game.combat.combatants.find((c) => c.tokenId === targetid);
 const type = 'bleed';
 
-if (canvas.tokens.get(targetid).data.effects.includes('systems/pf2e/icons/spells/blood-vendetta.jpg')) {
-  ui.notifications.warn('Target is already bleeding.');
-  return;
+if (TurnAlert.getAlerts()) {
+  if (TurnAlert.getAlertByName(`${targetid}:${type}`)) {
+    ui.notifications.warn('Target is already bleeding.');
+    return;
+  }
+} else {
+  TurnAlert.create({
+    name: 'Alert Initialization',
+    label: 'Alert Initialization',
+  });
 }
+
 if (target == undefined) {
   ui.notifications.warn('Target isnt in combat');
   return;
@@ -31,11 +39,11 @@ const applyChanges = ($html) => {
       frequency: 1,
     },
     args: [targetid, damage, type],
-    macro: 'DoT Tick',
+    macro: 'Effect Tick',
   };
 
   TurnAlert.create(alertData);
-  game.macros.getName('Apply DoT Icon').execute(targetid, type);
+  game.macros.getName('Toggle Effect Icon').execute(targetid, type);
 };
 
 const dialog = new Dialog({
