@@ -32,7 +32,7 @@ const applyChanges = ($html) => {
   };
 
   TurnAlert.create(alertData);
-  game.macros.getName('Toggle Effect Icon').execute(targetid, type);
+  game.macros.getName('Toggle Effect Icon').execute(targetid, type, true);
 };
 
 const dialog = new Dialog({

@@ -7,7 +7,20 @@ function main() {
   const targetHP = targetToken.actor.data.data.attributes.hp.value;
   let messageContent;
 
+  let DRmodifier = 0;
+  const DR = targetToken.actor.data.data.traits.dr.find((c) => c.type === args[2]);
+  if (DR) {
+    DRmodifier = DR.value;
+  }
+
+  let DVmodifier = 0;
+  const DV = targetToken.actor.data.data.traits.dv.find((c) => c.type === args[2]);
+  if (DV) {
+    DVmodifier = DV.value;
+  }
+
   const dieRoll = new Roll(`${args[1]}`).roll();
+  game.macros.getName('Toggle Effect Icon').execute(args[0], args[2], true);
 
   if (args[2] == 'fast-healing' || args[2] == 'regen') {
     targetToken.actor.update({ 'data.attributes.hp.value': targetHP + dieRoll.total });
@@ -17,7 +30,7 @@ function main() {
       messageContent = 'Regenerates';
     }
   } else {
-    targetToken.actor.update({ 'data.attributes.hp.value': targetHP - dieRoll.total });
+    targetToken.actor.update({ 'data.attributes.hp.value': targetHP - dieRoll.total + (DRmodifier - DVmodifier) });
     messageContent = `takes persistant ${args[2]} damage`;
   }
 
@@ -32,7 +45,7 @@ function main() {
   if (alrt.repeating.expire) {
     console.log(`${alrt.createdRound + alrt.repeating.expire} R ${game.combat.round}`);
     if (alrt.createdRound + alrt.repeating.expire <= game.combat.round) {
-      game.macros.getName('Toggle Effect Icon').execute(args[0], args[2]);
+      game.macros.getName('Toggle Effect Icon').execute(args[0], args[2], false);
     }
   }
 }

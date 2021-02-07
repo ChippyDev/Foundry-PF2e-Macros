@@ -20,7 +20,7 @@ async function main() {
       await target.actor.removeCustomModifier('ac', 'Raised Shield');
       target.toggleEffect(icon);
       messageContent = 'Lowers their shield';
-      if (game.combat) {
+      if (game.combat.combatants.find((c) => c.tokenId === target.data._id)) {
         const alertId = TurnAlert.getAlertByName(`${target.data._id}:shield`);
         if (alertId) TurnAlert.delete(game.combat._id, alertId.id);
       }
@@ -28,7 +28,7 @@ async function main() {
       await target.actor.addCustomModifier('ac', 'Raised Shield', Number(shield.data.armor.value), 'circumstance');
       target.toggleEffect(icon);
       messageContent = 'Raises their shield';
-      if (game.combat) {
+      if (game.combat.combatants.find((c) => c.tokenId === target.data._id)) {
         TurnAlert.create({
           name: `${target.data._id}:shield`,
           label: `Raised Shield`,

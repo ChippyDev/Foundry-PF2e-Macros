@@ -3,19 +3,34 @@
 // args[2] = desired state
 
 const iconTarget = canvas.tokens.get(args[0]);
+let typeURL;
 
-if (args[1] == 'bleed') {
-  iconTarget.toggleEffect('systems/pf2e/icons/spells/blood-vendetta.jpg');
-} 
-if (args[1] == 'acid') {
-  iconTarget.toggleEffect('systems/pf2e/icons/spells/cloudkill.jpg');
-} 
-if (args[1] == 'fire') {
-  iconTarget.toggleEffect('systems/pf2e/icons/spells/produce-flame.jpg');
-} 
-if (args[1] == 'fast-healing') {
-  iconTarget.toggleEffect('systems/pf2e/icons/spells/life-boost.jpg');
-} 
-if (args[1] == 'regen') {
-  iconTarget.toggleEffect('systems/pf2e/icons/spells/regeneration.jpg');
+function Toggleicon(type) {
+  const status = iconTarget.data.effects.includes(type);
+  if (status == args[2]) {
+    return;
+  }
+  iconTarget.toggleEffect(type);
 }
+
+switch (args[1]) {
+  case 'bleed':
+    typeURL = 'systems/pf2e/icons/spells/blood-vendetta.jpg';
+    break;
+  case 'acid':
+    typeURL = 'systems/pf2e/icons/spells/cloudkill.jpg';
+    break;
+  case 'fire':
+    typeURL = 'systems/pf2e/icons/spells/produce-flame.jpg';
+    break;
+  case 'fast-healing':
+    typeURL = 'systems/pf2e/icons/spells/life-boost.jpg';
+    break;
+  case 'regen':
+    typeURL = 'systems/pf2e/icons/spells/regeneration.jpg';
+    break;
+  default:
+    ui.notifications.warn('Invalid effect type');
+    return;
+}
+Toggleicon(typeURL);

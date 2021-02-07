@@ -21,7 +21,7 @@ const applyChanges = ($html) => {
   const type = $html.find('[name="type"]')[0].value || 'null';
   const alertId = TurnAlert.getAlertByName(`${token.data._id}:${type}`).id;
 
-  game.macros.getName('Toggle Effect Icon').execute(token.data._id, type);
+  game.macros.getName('Toggle Effect Icon').execute(token.data._id, type, false);
   TurnAlert.delete(game.combat._id, alertId);
 };
 
