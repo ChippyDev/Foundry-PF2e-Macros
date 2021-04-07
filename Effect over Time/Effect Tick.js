@@ -49,10 +49,13 @@ function main() {
     }
   }
 }
-
-const alertArray = TurnAlert.getAlerts().filter(
-  (c) => c.turnId === game.combat.combatants.find((c) => c.tokenId === args[0])._id
-);
-const delay = alertArray.indexOf(alertArray.find((c) => c.name == `${args[0]}:${args[2]}`)) * 200;
-
-setTimeout(main, delay);
+async function getDelay() {
+  const currentCombatant = game.combat.combatants.find((c) => c.tokenId === args[0]);
+  if (!currentCombatant) {
+    ui.notifications.error('No combatant, how did this happen?');
+    return;
+  }
+  const alertArray = TurnAlert.getAlerts().filter((c) => c.turnId === currentCombatant._id);
+  return (alertArray.indexOf(alertArray.find((c) => c.name == `${args[0]}:${args[2]}`)) * 200);
+}
+setTimeout(main, getDelay());

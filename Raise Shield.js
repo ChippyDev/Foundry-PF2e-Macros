@@ -1,6 +1,7 @@
 async function main() {
   const icon = 'icons/equipment/shield/heater-steel-grey.webp';
   let messageContent, target;
+  
   if (args[0]) {
     target = canvas.tokens.get(args[0]);
   } else {
@@ -34,7 +35,7 @@ async function main() {
           label: `Raised Shield`,
           round: 1,
           turnId: game.combat.combatants.find((c) => c.tokenId === target.data._id)._id,
-          macro: 'Better Shield',
+          macro: 'Raise Shield',
           args: [target.data._id],
         });
       }

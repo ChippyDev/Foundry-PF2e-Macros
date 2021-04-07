@@ -1,12 +1,25 @@
 // args[0] = Add/Remove
 // args[1] = alertdata
-
-const target = game.combat.combatants.find((c) => c.tokenId === args[1].args[0]);
+//  args[1].args[0] = Target token id
+//  args[1].args[1] = Formula
+//  args[1].args[2] = Type
 
 if (TurnAlert.getAlerts()) {
   if (TurnAlert.getAlertByName(args[1].name)) {
-    ui.notifications.warn(`Target already has a ${args[1].args[2]} effect.`);
-    return;
+    const CurrentAlert = TurnAlert.getAlertByName(args[1].name);
+    const currentDamage = new Roll(CurrentAlert.args[1]).evaluate({ maximize: true });
+    const newDamage = new Roll(args[1].args[1]).evaluate({ maximize: true });
+    if (newDamage.total > currentDamage.total) {
+      TurnAlert.delete(game.combat._id, CurrentAlert.id);
+      ui.notifications.info(
+        `Old ${args[1].args[2]} effect overwritten due to having lower total ${
+          args[1].args[2] == 'fast-healing' || args[1].args[2] == 'regen' ? 'healing' : 'damage'
+        }.`
+      );
+    } else {
+      ui.notifications.warn(`The target already has a better ${args[1].args[2]} effect.`);
+      return;
+    }
   }
 } else {
   TurnAlert.create({
@@ -15,10 +28,11 @@ if (TurnAlert.getAlerts()) {
   });
 }
 
-if (target == undefined) {
-  ui.notifications.warn('Target isnt in combat');
-  return;
+if (!game.combat.combatants.find((c) => c.tokenId === args[1].args[0])) {
+  await game.combat.createCombatant({ tokenId: args[1].args[0], hidden: true, initiative: 0});
 }
+
+const target = game.combat.combatants.find((c) => c.tokenId === args[1].args[0]);
 
 args[1].turnId = target._id;
 args[1].macro = 'Effect Tick';
