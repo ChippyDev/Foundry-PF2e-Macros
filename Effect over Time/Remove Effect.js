@@ -7,18 +7,18 @@ const alertArray = TurnAlert.getAlerts().filter(
   (c) => c.turnId === game.combat.combatants.find((c) => c.tokenId === token.data._id)._id
 );
 
+let removalOptions = '';
 if (alertArray.length == 0) {
-  ui.notifications.warn('Actor has no Effects.');
-  return;
-}
-
-let options = '';
-for (let x = 0; x < alertArray.length; x++) {
-  options += `<option value="${alertArray[x].args[2]}">${alertArray[x].label}</option>\n`;
+  removalOptions += '<option value="null">Actor has no Effects.</option>\n';
+} else {
+  for (let x = 0; x < alertArray.length; x++) {
+    removalOptions += `<option value="${alertArray[x].args[2]}">${alertArray[x].label}</option>\n`;
+  }
 }
 
 const applyChanges = ($html) => {
   const type = $html.find('[name="type"]')[0].value || 'null';
+  if (type == 'null') return;
   const alertId = TurnAlert.getAlertByName(`${token.data._id}:${type}`).id;
 
   game.macros.getName('Toggle Effect Icon').execute(token.data._id, type, false);
@@ -31,7 +31,7 @@ const dialog = new Dialog({
 <form>
 <div class="form-group"> 
 <select id="type" name="type">
-${options}
+${removalOptions}
 </select>
 </div>
 </form>
